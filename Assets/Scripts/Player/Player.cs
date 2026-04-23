@@ -25,7 +25,6 @@ public class Player : MonoBehaviour
         groundLayer = LayerMask.GetMask("Ground");
     }
 
-    // Update is called once per frame
     void Update()
     {
         UpdateMovement();
