@@ -17,10 +17,12 @@ public class Player : MonoBehaviour
     [SerializeField] private float jumpForce = 5f;
     private float horizontal;
     private bool facingRight = true;
+    private bool isGrounded = true;
 
     [Header("Bunny Hop Details")]
     [SerializeField] private float bunnyHopBonus = 1.2f;    // speed multiplier on successful hop
     [SerializeField] private float bunnyHopWindow = 0.15f;  // seconds after landing to qualify
+    [SerializeField] private float bunnyHopMaxSpeed = 15f;
     private float landedTime = -1f;
     private bool wasGrounded = false;
 
@@ -38,6 +40,7 @@ public class Player : MonoBehaviour
     void Update()
     {
         UpdateMovement();
+        HandleIsGrounded();
         HandleAnimations();
         HandleFlip();
         TrackLanding();
@@ -45,14 +48,14 @@ public class Player : MonoBehaviour
 
     private void HandleAnimations()
     {
-        bool isMoving = rb.linearVelocity.x != 0;
-
-        animator.SetBool("isMoving", isMoving);
+        animator.SetFloat("linearVelocityX", rb.linearVelocity.x);
+        animator.SetFloat("linearVelocityY", rb.linearVelocity.y);
+        animator.SetBool("isGrounded", isGrounded);
     }
 
-    private bool IsGrounded()
+    private void HandleIsGrounded()
     {
-        return Physics2D.OverlapBox(groundCheck.position, new Vector2(col.bounds.size.x, 0.1f), 0f, groundLayer);
+        isGrounded = Physics2D.OverlapBox(groundCheck.position, new Vector2(col.bounds.size.x, 0.1f), 0f, groundLayer);
     }
 
     private void UpdateMovement()
@@ -67,7 +70,7 @@ public class Player : MonoBehaviour
 
     public void HandleJump(InputAction.CallbackContext context)
     {
-        if (context.performed && IsGrounded())
+        if (context.performed && isGrounded)
         {
             float timeSinceLanded = Time.time - landedTime;
             bool isBunnyHop = timeSinceLanded <= bunnyHopWindow;
@@ -78,6 +81,7 @@ public class Player : MonoBehaviour
             {
                 newJumpForce = jumpForce * 1.1f; // slightly higher jump on bunny hop
                 horizontal *= bunnyHopBonus;     // preserve + boost horizontal speed
+                horizontal = Mathf.Clamp(horizontal, -bunnyHopMaxSpeed, bunnyHopMaxSpeed); // cap it
             }
 
             rb.linearVelocity = new Vector2(horizontal * moveSpeed, newJumpForce);
@@ -91,7 +95,7 @@ public class Player : MonoBehaviour
 
     private void TrackLanding()
     {
-        bool grounded = IsGrounded();
+        bool grounded = isGrounded;
 
         if (!wasGrounded && grounded) // just landed this frame
         {
@@ -122,7 +126,7 @@ public class Player : MonoBehaviour
     {
         if (groundCheck == null || col == null) return;
 
-        Gizmos.color = IsGrounded() ? Color.green : Color.red;
+        Gizmos.color = isGrounded ? Color.green : Color.red;
 
         // OverlapBox
         Gizmos.DrawWireCube(groundCheck.position, new Vector3(col.bounds.size.x, 0.1f, 0f));

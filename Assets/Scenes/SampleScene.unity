@@ -288,9 +288,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
   moveSpeed: 8
-  jumpForce: 8
+  jumpForce: 14
   bunnyHopBonus: 1.2
   bunnyHopWindow: 0.15
+  bunnyHopMaxSpeed: 15
 --- !u!114 &186226332
 MonoBehaviour:
   m_ObjectHideFlags: 0
