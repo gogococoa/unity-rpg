@@ -18,6 +18,8 @@ public class Player : MonoBehaviour
     private float horizontal;
     private bool facingRight = true;
     private bool isGrounded = true;
+    private bool canMove = true;
+    private bool canJump = true;
 
     [Header("Bunny Hop Details")]
     [SerializeField] private float bunnyHopBonus = 1.2f;    // speed multiplier on successful hop
@@ -58,9 +60,21 @@ public class Player : MonoBehaviour
         isGrounded = Physics2D.OverlapBox(groundCheck.position, new Vector2(col.bounds.size.x, 0.1f), 0f, groundLayer);
     }
 
+    public void EnableMovementAndJump(bool enable)
+    {
+        canMove = enable;
+        canJump = enable;
+    }
+
     private void UpdateMovement()
     {
-        rb.linearVelocity = new Vector2(horizontal * moveSpeed, rb.linearVelocity.y);
+        if (canMove)
+        {
+            rb.linearVelocity = new Vector2(horizontal * moveSpeed, rb.linearVelocity.y);
+        } else
+        {
+            rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
+        }
     }
 
     public void HandleMovement(InputAction.CallbackContext context)
@@ -70,7 +84,7 @@ public class Player : MonoBehaviour
 
     public void HandleJump(InputAction.CallbackContext context)
     {
-        if (context.performed && isGrounded)
+        if (context.performed && isGrounded && canJump)
         {
             float timeSinceLanded = Time.time - landedTime;
             bool isBunnyHop = timeSinceLanded <= bunnyHopWindow;
@@ -93,6 +107,14 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void TryToAttack(InputAction.CallbackContext context)
+    {
+        if (context.performed && isGrounded)
+        {
+            animator.SetTrigger("isAttack");
+        }
+    }
+
     private void TrackLanding()
     {
         bool grounded = isGrounded;
@@ -110,7 +132,8 @@ public class Player : MonoBehaviour
         if (rb.linearVelocity.x > 0 && !facingRight)
         {
             Flip();
-        } else if (rb.linearVelocity.x < 0 && facingRight)
+        }
+        else if (rb.linearVelocity.x < 0 && facingRight)
         {
             Flip();
         }
