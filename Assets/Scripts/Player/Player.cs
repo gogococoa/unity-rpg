@@ -8,6 +8,11 @@ public class Player : MonoBehaviour
     private Rigidbody2D rb;
     private CapsuleCollider2D col;
 
+    [Header("Attack Details")]
+    [SerializeField] private float attackRadius;
+    [SerializeField] private Transform attackPoint;
+    [SerializeField] private LayerMask enemyLayer;
+
     [Header("Ground Collision Details")]
     private Transform groundCheck;
     private LayerMask groundLayer;
@@ -107,6 +112,16 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void DamageEnemies()
+    {
+        Collider2D[] enemyColliders = Physics2D.OverlapCircleAll(attackPoint.position, attackRadius, enemyLayer);
+
+        foreach (Collider2D enemy in enemyColliders)
+        {
+            enemy.gameObject.GetComponent<Enemy>().TakeDamage();
+        }
+    }
+
     public void TryToAttack(InputAction.CallbackContext context)
     {
         if (context.performed && isGrounded)
@@ -153,5 +168,8 @@ public class Player : MonoBehaviour
 
         // OverlapBox
         Gizmos.DrawWireCube(groundCheck.position, new Vector3(col.bounds.size.x, 0.1f, 0f));
+
+        // Attack Radius
+        Gizmos.DrawWireSphere(attackPoint.position, attackRadius);
     }
 }
