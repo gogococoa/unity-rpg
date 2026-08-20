@@ -1,47 +1,23 @@
-using System.Threading;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    private SpriteRenderer sr;
-    private readonly float redColorDuration = 1;
+    [SerializeField] protected float speed;
+    [SerializeField] protected string displayName;
 
-    private float currentTimeInGame;
-    private float lastTimeWasDamaged;
-
-    private Color originColor;
-
-
-    private void Awake()
+    [ContextMenu("MoveAround")]
+    private void MoveAround()
     {
-        sr = GetComponent<SpriteRenderer>();
-        originColor = sr.color;
+        Debug.Log(displayName + " Move " + speed + " speed");
     }
 
-    private void Update()
-    {
-        currentTimeInGame = Time.time;
-
-        ChangeColorToOriginColor();
+    [ContextMenu("Attack")]
+    private void Attack() {
+        Debug.Log(displayName + " Attach " + "player");
     }
 
-    public void TakeDamage()
-    {
-        sr.color = Color.red;
-
-        lastTimeWasDamaged = Time.time;
-    }
-
-    private void ChangeColorToOriginColor()
-    {
-        if (currentTimeInGame > lastTimeWasDamaged + redColorDuration && sr.color != originColor)
-        {
-            TurnOriginColor();
-        }
-    }
-
-    private void TurnOriginColor()
-    {
-        sr.color = originColor;
+    [ContextMenu("TakeDamage")]
+    public void TakeDamage() {
+        Debug.Log(displayName + " take some damage");
     }
 }
