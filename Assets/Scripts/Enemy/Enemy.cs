@@ -6,13 +6,13 @@ public class Enemy : MonoBehaviour
     [SerializeField] protected string displayName;
 
     [ContextMenu("MoveAround")]
-    private void MoveAround()
+    protected void MoveAround()
     {
         Debug.Log(displayName + " Move " + speed + " speed");
     }
 
     [ContextMenu("Attack")]
-    private void Attack() {
+    protected virtual void Attack() {
         Debug.Log(displayName + " Attach " + "player");
     }
 
