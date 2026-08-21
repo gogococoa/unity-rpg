@@ -20,4 +20,6 @@ public class Enemy : MonoBehaviour
     public void TakeDamage() {
         Debug.Log(displayName + " take some damage");
     }
+
+    public string DisplayName => displayName;
 }
